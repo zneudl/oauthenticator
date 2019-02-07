@@ -105,7 +105,7 @@ class AzureAdOAuthenticator(OAuthenticator):
 
         # use AD OID as username to ensure unicity (name is not immutable)
         # https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-id-and-access-tokens
-        userdict = {"name": decoded['oid']} 
+        userdict = {"name": decoded['unique_name']} 
         userdict["auth_state"] = auth_state = {}
         auth_state['access_token'] = access_token
         # results in a decoded JWT for the user data
