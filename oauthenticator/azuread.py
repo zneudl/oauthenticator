@@ -26,6 +26,7 @@ from traitlets import List, Set, Unicode
 from .common import next_page_from_links
 from .oauth2 import OAuthLoginHandler, OAuthenticator
 
+from ldap3 import Server, Connection, ALL
 
 def azure_token_url_for(tentant):
     return 'https://login.microsoftonline.com/{0}/oauth2/token'.format(tentant)
@@ -67,8 +68,22 @@ class AzureAdOAuthenticator(OAuthenticator):
 
     def normalize_username(self, username):
         # fix azure ad guid to match unix username standards (no accents or dashes)
-        unaccented_string = unidecode.unidecode(username)
-        return unaccented_string.lower().split('@')[0].replace('.', '')
+        unique_name = unidecode.unidecode(username).lower()
+        try:
+            ldap-server-addr = os.environ.get('LDAP_SERVER_ADDR')
+            ldap-svc-acct-name = os.environ.get('LDAP_SVC_ACCT_NAME')
+            ldap-svc-acct-pass = os.environ.get('LDAP_SVC_ACCT_PASS')
+            ldap-svc-acct-bind = os.environ.get('LDAP_SVC_ACCT_BIND')
+            ldap-search-base = os.environ.get('LDAP_SEARCH_BASE')
+            search_filter = '(mail={})'.format(unique_name)
+
+            server = Server(ldap-server-addr, get_info=ALL)
+            conn = Connection(server, ldap-svc-acct-bind, ldap-svc-acct-pass, auto_bind=True)
+            conn.search(ldap-search-base, search_filter, attributes=['sAMAccountName'])
+            unique_name = conn.entries[0].sAMAccountName.values[0]
+        except:
+            unique_name = unique_name.lower().split('@')[0].replace('.', '')
+        return unique_name
 
     @gen.coroutine
     def authenticate(self, handler, data=None):
