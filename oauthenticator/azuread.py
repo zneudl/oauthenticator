@@ -70,16 +70,16 @@ class AzureAdOAuthenticator(OAuthenticator):
         # fix azure ad guid to match unix username standards (no accents or dashes)
         unique_name = unidecode.unidecode(username).lower()
         try:
-            ldap-server-addr = os.environ.get('LDAP_SERVER_ADDR')
-            ldap-svc-acct-name = os.environ.get('LDAP_SVC_ACCT_NAME')
-            ldap-svc-acct-pass = os.environ.get('LDAP_SVC_ACCT_PASS')
-            ldap-svc-acct-bind = os.environ.get('LDAP_SVC_ACCT_BIND')
-            ldap-search-base = os.environ.get('LDAP_SEARCH_BASE')
+            ldap_server_addr = os.environ.get('LDAP_SERVER_ADDR')
+            ldap_svc_acct_name = os.environ.get('LDAP_SVC_ACCT_NAME')
+            ldap_svc_acct_pass = os.environ.get('LDAP_SVC_ACCT_PASS')
+            ldap_svc_acct_bind = os.environ.get('LDAP_SVC_ACCT_BIND')
+            ldap_search_base = os.environ.get('LDAP_SEARCH_BASE')
             search_filter = '(mail={})'.format(unique_name)
 
-            server = Server(ldap-server-addr, get_info=ALL)
-            conn = Connection(server, ldap-svc-acct-bind, ldap-svc-acct-pass, auto_bind=True)
-            conn.search(ldap-search-base, search_filter, attributes=['sAMAccountName'])
+            server = Server(ldap_server_addr, get_info=ALL)
+            conn = Connection(server, ldap_svc_acct_bind, ldap_svc_acct_pass, auto_bind=True)
+            conn.search(ldap_search_base, search_filter, attributes=['sAMAccountName'])
             unique_name = conn.entries[0].sAMAccountName.values[0]
         except:
             unique_name = unique_name.lower().split('@')[0].replace('.', '')
