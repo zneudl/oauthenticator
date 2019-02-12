@@ -118,7 +118,7 @@ class LocalAzureAdOAuthenticator(LocalAuthenticator, AzureAdOAuthenticator):
     def normalize_username(self, username):
         # fix azure ad guid to match unix username standards (no accents or dashes)
         unaccented_string = unidecode.unidecode(username)
-        return unaccented_string.lower().replace('-', '')
+        return unaccented_string.lower().split('@')[0].replace('.', '')
 
     """A version that mixes in local system user creation"""
     pass
