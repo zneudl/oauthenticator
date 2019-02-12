@@ -65,6 +65,11 @@ class AzureAdOAuthenticator(OAuthenticator):
             app_log.info('ID4: {0}'.format(tenant_id))
             return tenant_id
 
+    def normalize_username(self, username):
+        # fix azure ad guid to match unix username standards (no accents or dashes)
+        unaccented_string = unidecode.unidecode(username)
+        return unaccented_string.lower().split('@')[0].replace('.', '')
+
     @gen.coroutine
     def authenticate(self, handler, data=None):
         code = handler.get_argument("code")
@@ -115,10 +120,5 @@ class AzureAdOAuthenticator(OAuthenticator):
 
 
 class LocalAzureAdOAuthenticator(LocalAuthenticator, AzureAdOAuthenticator):
-    def normalize_username(self, username):
-        # fix azure ad guid to match unix username standards (no accents or dashes)
-        unaccented_string = unidecode.unidecode(username)
-        return unaccented_string.lower().split('@')[0].replace('.', '')
-
     """A version that mixes in local system user creation"""
     pass
